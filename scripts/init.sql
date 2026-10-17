@@ -1,0 +1,156 @@
+CREATE TABLE Store (
+    Id SERIAL PRIMARY KEY,
+    Name VARCHAR(255) NOT NULL,
+    Address VARCHAR(500)
+);
+
+CREATE TABLE Department (
+    Id SERIAL PRIMARY KEY,
+    StoreId INT NOT NULL,
+    Name VARCHAR(255) NOT NULL,
+    FOREIGN KEY (StoreId) REFERENCES Store(Id) ON DELETE CASCADE
+);
+
+CREATE TABLE Position (
+    Id SERIAL PRIMARY KEY,
+    Title VARCHAR(255) NOT NULL,
+    BaseSalary DECIMAL(12, 2) NOT NULL
+);
+
+CREATE TABLE Employee (
+    Id SERIAL PRIMARY KEY,
+    DepartmentId INT NOT NULL,
+    PositionId INT NOT NULL,
+    FirstName VARCHAR(100) NOT NULL,
+    LastName VARCHAR(100) NOT NULL,
+    Email VARCHAR(255) UNIQUE,
+    
+    IsDeleted BOOLEAN DEFAULT FALSE,
+    DeletedAt TIMESTAMP,
+    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UpdatedBy INT,
+    
+    FOREIGN KEY (DepartmentId) REFERENCES Department(Id) ON DELETE RESTRICT,
+    FOREIGN KEY (PositionId) REFERENCES Position(Id) ON DELETE RESTRICT
+);
+
+CREATE TABLE EmployeeShift (
+    Id SERIAL PRIMARY KEY,
+    EmployeeId INT NOT NULL,
+    StartTime TIMESTAMP NOT NULL,
+    EndTime TIMESTAMP NOT NULL,
+    FOREIGN KEY (EmployeeId) REFERENCES Employee(Id) ON DELETE CASCADE
+);
+
+CREATE TABLE Category (
+    Id SERIAL PRIMARY KEY,
+    Name VARCHAR(255) NOT NULL,
+    Description TEXT
+);
+
+CREATE TABLE Supplier (
+    Id SERIAL PRIMARY KEY,
+    Name VARCHAR(255) NOT NULL,
+    ContactEmail VARCHAR(255),
+    
+    IsDeleted BOOLEAN DEFAULT FALSE,
+    DeletedAt TIMESTAMP
+);
+
+CREATE TABLE Product (
+    Id SERIAL PRIMARY KEY,
+    CategoryId INT NOT NULL,
+    SupplierId INT NOT NULL,
+    Name VARCHAR(255) NOT NULL,
+    SKU VARCHAR(100) UNIQUE NOT NULL,
+    Price DECIMAL(12, 2) NOT NULL,
+    
+    IsDeleted BOOLEAN DEFAULT FALSE,
+    DeletedAt TIMESTAMP,
+    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UpdatedBy INT,
+    
+    FOREIGN KEY (CategoryId) REFERENCES Category(Id) ON DELETE RESTRICT,
+    FOREIGN KEY (SupplierId) REFERENCES Supplier(Id) ON DELETE RESTRICT
+);
+
+CREATE TABLE Inventory (
+    Id SERIAL PRIMARY KEY,
+    ProductId INT NOT NULL,
+    StoreId INT NOT NULL,
+    Quantity INT DEFAULT 0,
+    
+    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UpdatedBy INT,
+    
+    FOREIGN KEY (ProductId) REFERENCES Product(Id) ON DELETE CASCADE,
+    FOREIGN KEY (StoreId) REFERENCES Store(Id) ON DELETE CASCADE,
+    UNIQUE (ProductId, StoreId)
+);
+
+CREATE TABLE Customer (
+    Id SERIAL PRIMARY KEY,
+    FirstName VARCHAR(100) NOT NULL,
+    LastName VARCHAR(100) NOT NULL,
+    Email VARCHAR(255) UNIQUE,
+    Phone VARCHAR(50),
+    
+    IsDeleted BOOLEAN DEFAULT FALSE,
+    DeletedAt TIMESTAMP,
+    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UpdatedBy INT
+);
+
+CREATE TABLE "Order" (
+    Id SERIAL PRIMARY KEY,
+    CustomerId INT NOT NULL,
+    StoreId INT NOT NULL,
+    OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    TotalAmount DECIMAL(12, 2) NOT NULL,
+    Status VARCHAR(50) DEFAULT 'Pending',
+    
+    FOREIGN KEY (CustomerId) REFERENCES Customer(Id) ON DELETE RESTRICT,
+    FOREIGN KEY (StoreId) REFERENCES Store(Id) ON DELETE RESTRICT
+);
+
+CREATE TABLE OrderItem (
+    Id SERIAL PRIMARY KEY,
+    OrderId INT NOT NULL,
+    ProductId INT NOT NULL,
+    Quantity INT NOT NULL CHECK (Quantity > 0),
+    UnitPrice DECIMAL(12, 2) NOT NULL,
+    
+    FOREIGN KEY (OrderId) REFERENCES "Order"(Id) ON DELETE CASCADE,
+    FOREIGN KEY (ProductId) REFERENCES Product(Id) ON DELETE RESTRICT
+);
+
+CREATE TABLE Payment (
+    Id SERIAL PRIMARY KEY,
+    OrderId INT NOT NULL,
+    PaymentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Amount DECIMAL(12, 2) NOT NULL,
+    PaymentMethod VARCHAR(50) NOT NULL,
+    
+    FOREIGN KEY (OrderId) REFERENCES "Order"(Id) ON DELETE CASCADE
+);
+
+CREATE TABLE Delivery (
+    Id SERIAL PRIMARY KEY,
+    OrderId INT UNIQUE NOT NULL,
+    DeliveryAddress TEXT NOT NULL,
+    EstimatedDeliveryDate TIMESTAMP,
+    Status VARCHAR(50) DEFAULT 'Processing',
+    
+    FOREIGN KEY (OrderId) REFERENCES "Order"(Id) ON DELETE CASCADE
+);
+
+CREATE TABLE Discount (
+    Id SERIAL PRIMARY KEY,
+    ProductId INT NOT NULL,
+    Percentage DECIMAL(5, 2) NOT NULL CHECK (Percentage > 0 AND Percentage <= 100),
+    StartDate TIMESTAMP NOT NULL,
+    EndDate TIMESTAMP NOT NULL,
+    IsActive BOOLEAN DEFAULT TRUE,
+    
+    FOREIGN KEY (ProductId) REFERENCES Product(Id) ON DELETE CASCADE
+);

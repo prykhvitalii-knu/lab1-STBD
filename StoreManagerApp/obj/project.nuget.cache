@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "FsgkQIx+8nA=",
+  "success": true,
+  "projectFilePath": "/Users/vit/Desktop/lab1-STBD/StoreManagerApp/StoreManagerApp.csproj",
+  "expectedPackageFiles": [
+    "/Users/vit/.nuget/packages/dapper/2.1.89/dapper.2.1.89.nupkg.sha512",
+    "/Users/vit/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/9.0.0/microsoft.extensions.dependencyinjection.abstractions.9.0.0.nupkg.sha512",
+    "/Users/vit/.nuget/packages/microsoft.extensions.logging.abstractions/9.0.0/microsoft.extensions.logging.abstractions.9.0.0.nupkg.sha512",
+    "/Users/vit/.nuget/packages/npgsql/10.0.3/npgsql.10.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
