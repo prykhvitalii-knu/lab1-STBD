@@ -45,9 +45,17 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "Bogus": {
+              "target": "Package",
+              "version": "[35.6.5, )"
+            },
             "Dapper": {
               "target": "Package",
               "version": "[2.1.89, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.13.0, )"
             },
             "Npgsql": {
               "target": "Package",
